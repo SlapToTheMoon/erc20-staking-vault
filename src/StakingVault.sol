@@ -16,4 +16,14 @@ contract StakingVault {
         stakingToken = IERC20(stakingToken_);
 
     }
+    function stake(uint256 amount) external {
+    require(amount > 0, "zero amount");
+
+    // 1) pull tokens from user into the vault
+    stakingToken.transferFrom(msg.sender, address(this), amount);
+    // 2) update balanceOf[msg.sender]
+balanceOf[msg.sender] += amount;
+    // 3) update totalStaked
+    totalStaked += amount;
+}
 }
