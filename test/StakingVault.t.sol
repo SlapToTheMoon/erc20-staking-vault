@@ -34,4 +34,21 @@ contract StakingVaultTest is Test {
     assertEq(vault.totalStaked(), 100 ether);
 }
 
+function testUnstakeReducesBalancesAndReturnsTokens() public {
+    // arrange: stake 100 ether first
+    token.approve(address(vault), 100 ether);
+    vault.stake(100 ether);
+
+    // act: unstake 40 ether
+    vault.unstake(40 ether);
+
+    // assert: vault now holds 60, user got 40 back
+    assertEq(token.balanceOf(address(vault)), 60 ether);
+    assertEq(vault.balanceOf(address(this)), 60 ether);
+    assertEq(vault.totalStaked(), 60 ether);
+
+    // user started with 1_000, staked 100, then unstaked 40 → 940
+    assertEq(token.balanceOf(address(this)), 940 ether);
+}
+
 }

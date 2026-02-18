@@ -25,5 +25,19 @@ contract StakingVault {
 balanceOf[msg.sender] += amount;
     // 3) update totalStaked
     totalStaked += amount;
+    }
+
+    function unstake(uint256 amount) external {
+    require(amount > 0, "zero amount");
+
+    // 1) check user has enough staked
+    require(balanceOf[msg.sender] >= amount);
+    // 2) update balanceOf[msg.sender]
+    balanceOf[msg.sender] -= amount;
+    // 3) update totalStaked
+    totalStaked -= amount;
+    // 4) transfer tokens from vault back to user
+    stakingToken.transfer(msg.sender, amount);
 }
+
 }
