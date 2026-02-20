@@ -49,4 +49,14 @@ balanceOf[msg.sender] += amount;
     stakingToken.transfer(msg.sender, amount);
 }
 
+
+function userShareBps(address user) public view returns (uint256) {
+    if (totalStaked == 0) return 0;
+
+    uint256 userStake = balanceOf[user];
+    if (userStake == 0) return 0;
+
+    return userStake * 10_000 / totalStaked;
+}
+
 }

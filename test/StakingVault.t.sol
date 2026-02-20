@@ -59,4 +59,17 @@ function testMultipleStakeCallsWork() public {
     assertEq(vault.balanceOf(address(this)), 200 ether);
     assertEq(vault.totalStaked(), 200 ether);
 }
+
+function testUserShareBpsSingleStaker() public {
+    token.approve(address(vault), 100 ether);
+    vault.stake(100 ether);
+
+    // only staker → 100%
+    assertEq(vault.userShareBps(address(this)), 10_000);
+}
+
+function testUserShareBpsZeroWhenNoStake() public {
+    assertEq(vault.userShareBps(address(this)), 0);
+}
+
 }
