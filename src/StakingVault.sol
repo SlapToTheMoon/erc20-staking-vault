@@ -10,13 +10,22 @@ contract StakingVault {
     uint256 public totalStaked;
     mapping(address => uint256) public balanceOf;
 
+    bool private _entered;
+
+    modifier nonReentrant() {
+       require(!_entered, "ReentrancyGuard: revert");
+       _entered = true;
+        _;
+        _entered = false;
+    }
+
     constructor(address stakingToken_) {
         // TODO: sanity-check address and set stakingToken
         require(stakingToken_ != address(0), "zero address");
         stakingToken = IERC20(stakingToken_);
 
     }
-    function stake(uint256 amount) external {
+    function stake(uint256 amount) external nonReentrant {
     require(amount > 0, "zero amount");
 
     // 1) pull tokens from user into the vault
@@ -27,7 +36,7 @@ balanceOf[msg.sender] += amount;
     totalStaked += amount;
     }
 
-    function unstake(uint256 amount) external {
+    function unstake(uint256 amount) external nonReentrant {
     require(amount > 0, "zero amount");
 
     // 1) check user has enough staked

@@ -50,5 +50,13 @@ function testUnstakeReducesBalancesAndReturnsTokens() public {
     // user started with 1_000, staked 100, then unstaked 40 → 940
     assertEq(token.balanceOf(address(this)), 940 ether);
 }
+function testMultipleStakeCallsWork() public {
+    token.approve(address(vault), 200 ether);
 
+    vault.stake(100 ether);
+    vault.stake(100 ether); // should not revert; guard must reset each call
+
+    assertEq(vault.balanceOf(address(this)), 200 ether);
+    assertEq(vault.totalStaked(), 200 ether);
+}
 }
