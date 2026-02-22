@@ -72,4 +72,25 @@ function testUserShareBpsZeroWhenNoStake() public {
     assertEq(vault.userShareBps(address(this)), 0);
 }
 
+function testTotalAssetsMatchesTotalStaked() public {
+    // arrange
+    token.approve(address(vault), 100 ether);
+    vault.stake(100 ether);
+
+    // act/assert
+    assertEq(vault.totalStaked(), 100 ether);
+    assertEq(vault.totalAssets(), 100 ether);
+}
+
+function testConvertToSharesIsIdentityForNow() public {
+    // no one staked yet
+    assertEq(vault.convertToShares(123 ether), 123 ether);
+
+    token.approve(address(vault), 100 ether);
+    vault.stake(100 ether);
+
+    // still 1:1 in this simple vault
+    assertEq(vault.convertToShares(50 ether), 50 ether);
+}
+
 }

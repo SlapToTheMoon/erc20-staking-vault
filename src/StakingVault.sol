@@ -59,4 +59,12 @@ function userShareBps(address user) public view returns (uint256) {
     return userStake * 10_000 / totalStaked;
 }
 
+function totalAssets() public view returns (uint256) {
+    return totalStaked;
+}
+
+function convertToShares(uint256 assets) public view returns (uint256 shares) {
+    return assets;
+}
+
 }
