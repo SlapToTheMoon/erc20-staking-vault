@@ -93,4 +93,27 @@ function testConvertToSharesIsIdentityForNow() public {
     assertEq(vault.convertToShares(50 ether), 50 ether);
 }
 
+event Staked(address indexed user, uint256 amount);
+event Unstaked(address indexed user, uint256 amount);
+
+function testStakeEmitsEvent() public {
+    token.approve(address(vault), 100 ether);
+
+    vm.expectEmit(true, false, false, true);
+    emit Staked(address(this), 100 ether);
+
+    vault.stake(100 ether);
+}
+
+function testUnstakeEmitsEvent() public {
+    token.approve(address(vault), 100 ether);
+    vault.stake(100 ether);
+
+    vm.expectEmit(true, false, false, true);
+    emit Unstaked(address(this), 40 ether);
+
+    vault.unstake(40 ether);
+}
+
+
 }

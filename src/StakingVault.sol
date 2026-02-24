@@ -12,6 +12,10 @@ contract StakingVault {
 
     bool private _entered;
 
+    event Staked(address indexed user, uint256 amount);
+    event Unstaked(address indexed user, uint256 amount);
+
+
     modifier nonReentrant() {
        require(!_entered, "ReentrancyGuard: revert");
        _entered = true;
@@ -34,6 +38,8 @@ contract StakingVault {
 balanceOf[msg.sender] += amount;
     // 3) update totalStaked
     totalStaked += amount;
+
+    emit Staked(msg.sender, amount);
     }
 
     function unstake(uint256 amount) external nonReentrant {
@@ -47,6 +53,8 @@ balanceOf[msg.sender] += amount;
     totalStaked -= amount;
     // 4) transfer tokens from vault back to user
     stakingToken.transfer(msg.sender, amount);
+
+    emit Unstaked(msg.sender, amount);
 }
 
 
