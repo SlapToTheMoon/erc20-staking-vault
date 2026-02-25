@@ -1,3 +1,36 @@
+# ERC20 Staking Vault (Foundry)
+
+A minimal ERC20 + staking vault system built with Foundry and OpenZeppelin.  
+The goal: production-style patterns, tests, and deploy scripts, not just toy code.
+
+## Overview
+
+- **Token:** `MyToken` – ERC20 + Ownable with initial supply to the deployer.
+- **Vault:** `StakingVault` – accepts `MyToken`, tracks user stakes, and allows stake/unstake.
+- **Patterns used:**
+  - `transferFrom` + `approve` ERC20 flow
+  - Vault accounting (`balanceOf`, `totalStaked`, `userShareBps`)
+  - Simple `nonReentrant` guard
+  - Events: `Staked`, `Unstaked`
+  - First steps toward ERC-4626-style helpers (`totalAssets`, `convertToShares`)
+
+## Stack
+
+- [Foundry](https://book.getfoundry.sh/)
+- [OpenZeppelin Contracts](https://github.com/OpenZeppelin/openzeppelin-contracts)
+
+## Project Structure
+
+```text
+src/
+  MyToken.sol
+  StakingVault.sol
+test/
+  MyToken.t.sol
+  StakingVault.t.sol
+script/
+  Deploy.s.sol
+foundry.toml
 ## Foundry
 
 **Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
