@@ -19,101 +19,101 @@ contract StakingVaultTest is Test {
         assertEq(vault.totalStaked(), 0);
         assertEq(vault.balanceOf(address(this)), 0);
     }
+
     function testStakeUpdatesBalances() public {
-    // arrange: give this test contract tokens & approve vault
-    token.approve(address(vault), 100 ether);
+        // arrange: give this test contract tokens & approve vault
+        token.approve(address(vault), 100 ether);
 
-    // act
-    vault.stake(100 ether);
+        // act
+        vault.stake(100 ether);
 
-    // assert: vault now holds tokens
-    assertEq(token.balanceOf(address(vault)), 100 ether);
-    // user’s stake balance updated
-    assertEq(vault.balanceOf(address(this)), 100 ether);
-    // global totalStaked updated
-    assertEq(vault.totalStaked(), 100 ether);
-}
+        // assert: vault now holds tokens
+        assertEq(token.balanceOf(address(vault)), 100 ether);
+        // user’s stake balance updated
+        assertEq(vault.balanceOf(address(this)), 100 ether);
+        // global totalStaked updated
+        assertEq(vault.totalStaked(), 100 ether);
+    }
 
-function testUnstakeReducesBalancesAndReturnsTokens() public {
-    // arrange: stake 100 ether first
-    token.approve(address(vault), 100 ether);
-    vault.stake(100 ether);
+    function testUnstakeReducesBalancesAndReturnsTokens() public {
+        // arrange: stake 100 ether first
+        token.approve(address(vault), 100 ether);
+        vault.stake(100 ether);
 
-    // act: unstake 40 ether
-    vault.unstake(40 ether);
+        // act: unstake 40 ether
+        vault.unstake(40 ether);
 
-    // assert: vault now holds 60, user got 40 back
-    assertEq(token.balanceOf(address(vault)), 60 ether);
-    assertEq(vault.balanceOf(address(this)), 60 ether);
-    assertEq(vault.totalStaked(), 60 ether);
+        // assert: vault now holds 60, user got 40 back
+        assertEq(token.balanceOf(address(vault)), 60 ether);
+        assertEq(vault.balanceOf(address(this)), 60 ether);
+        assertEq(vault.totalStaked(), 60 ether);
 
-    // user started with 1_000, staked 100, then unstaked 40 → 940
-    assertEq(token.balanceOf(address(this)), 940 ether);
-}
-function testMultipleStakeCallsWork() public {
-    token.approve(address(vault), 200 ether);
+        // user started with 1_000, staked 100, then unstaked 40 → 940
+        assertEq(token.balanceOf(address(this)), 940 ether);
+    }
 
-    vault.stake(100 ether);
-    vault.stake(100 ether); // should not revert; guard must reset each call
+    function testMultipleStakeCallsWork() public {
+        token.approve(address(vault), 200 ether);
 
-    assertEq(vault.balanceOf(address(this)), 200 ether);
-    assertEq(vault.totalStaked(), 200 ether);
-}
+        vault.stake(100 ether);
+        vault.stake(100 ether); // should not revert; guard must reset each call
 
-function testUserShareBpsSingleStaker() public {
-    token.approve(address(vault), 100 ether);
-    vault.stake(100 ether);
+        assertEq(vault.balanceOf(address(this)), 200 ether);
+        assertEq(vault.totalStaked(), 200 ether);
+    }
 
-    // only staker → 100%
-    assertEq(vault.userShareBps(address(this)), 10_000);
-}
+    function testUserShareBpsSingleStaker() public {
+        token.approve(address(vault), 100 ether);
+        vault.stake(100 ether);
 
-function testUserShareBpsZeroWhenNoStake() public {
-    assertEq(vault.userShareBps(address(this)), 0);
-}
+        // only staker → 100%
+        assertEq(vault.userShareBps(address(this)), 10_000);
+    }
 
-function testTotalAssetsMatchesTotalStaked() public {
-    // arrange
-    token.approve(address(vault), 100 ether);
-    vault.stake(100 ether);
+    function testUserShareBpsZeroWhenNoStake() public {
+        assertEq(vault.userShareBps(address(this)), 0);
+    }
 
-    // act/assert
-    assertEq(vault.totalStaked(), 100 ether);
-    assertEq(vault.totalAssets(), 100 ether);
-}
+    function testTotalAssetsMatchesTotalStaked() public {
+        // arrange
+        token.approve(address(vault), 100 ether);
+        vault.stake(100 ether);
 
-function testConvertToSharesIsIdentityForNow() public {
-    // no one staked yet
-    assertEq(vault.convertToShares(123 ether), 123 ether);
+        // act/assert
+        assertEq(vault.totalStaked(), 100 ether);
+        assertEq(vault.totalAssets(), 100 ether);
+    }
 
-    token.approve(address(vault), 100 ether);
-    vault.stake(100 ether);
+    function testConvertToSharesIsIdentityForNow() public {
+        // no one staked yet
+        assertEq(vault.convertToShares(123 ether), 123 ether);
 
-    // still 1:1 in this simple vault
-    assertEq(vault.convertToShares(50 ether), 50 ether);
-}
+        token.approve(address(vault), 100 ether);
+        vault.stake(100 ether);
 
-event Staked(address indexed user, uint256 amount);
-event Unstaked(address indexed user, uint256 amount);
+        // still 1:1 in this simple vault
+        assertEq(vault.convertToShares(50 ether), 50 ether);
+    }
 
-function testStakeEmitsEvent() public {
-    token.approve(address(vault), 100 ether);
+    event Staked(address indexed user, uint256 amount);
+    event Unstaked(address indexed user, uint256 amount);
 
-    vm.expectEmit(true, false, false, true);
-    emit Staked(address(this), 100 ether);
+    function testStakeEmitsEvent() public {
+        token.approve(address(vault), 100 ether);
 
-    vault.stake(100 ether);
-}
+        vm.expectEmit(true, false, false, true);
+        emit Staked(address(this), 100 ether);
 
-function testUnstakeEmitsEvent() public {
-    token.approve(address(vault), 100 ether);
-    vault.stake(100 ether);
+        vault.stake(100 ether);
+    }
 
-    vm.expectEmit(true, false, false, true);
-    emit Unstaked(address(this), 40 ether);
+    function testUnstakeEmitsEvent() public {
+        token.approve(address(vault), 100 ether);
+        vault.stake(100 ether);
 
-    vault.unstake(40 ether);
-}
+        vm.expectEmit(true, false, false, true);
+        emit Unstaked(address(this), 40 ether);
 
-
+        vault.unstake(40 ether);
+    }
 }
